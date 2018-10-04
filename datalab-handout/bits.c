@@ -192,7 +192,7 @@ int bitAnd(int x, int y)
  */
 int getByte(int x, int n)
 {
-  return -(~(~x & (0xFF << (2 << n+1))) >> (2 << n+1));
+  return (x >> (n << n)) & 0xff;
 }
 /* 
  * logicalShift - shift x to the right by n, using a logical shift
