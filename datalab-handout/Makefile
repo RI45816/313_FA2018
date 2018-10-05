@@ -6,7 +6,7 @@ CFLAGS = -O -Wall -m32
 LIBS = -lm
 
 all: clean btest fshow ishow
-	./btest
+	./btest -f logicalShift
 
 btest: btest.c bits.c decl.c tests.c btest.h bits.h
 	$(CC) $(CFLAGS) $(LIBS) -o btest bits.c btest.c decl.c tests.c
