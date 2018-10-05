@@ -184,7 +184,7 @@ int bitAnd(int x, int y)
 }
 /* 
  * getByte - Extract byte n from word x
- *   Bytes num:bered from 0 (LSB) to 3 (MSB)
+ *   Bytes numbered from 0 (LSB) to 3 (MSB)
  *   Examples: getByte(0x12345678,1) = 0x56
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 6
@@ -192,7 +192,8 @@ int bitAnd(int x, int y)
  */
 int getByte(int x, int n)
 {
-  return (x >> (n << n)) & 0xff;
+  /* Shift the int by 8 times the number of bytes to make it the first byte and then using an AND mask to extract the byte  */
+  return x >> (n << 3) & 0xff;
 }
 /* 
  * logicalShift - shift x to the right by n, using a logical shift
@@ -204,7 +205,25 @@ int getByte(int x, int n)
  */
 int logicalShift(int x, int n)
 {
-  return 2;
+  // (((1+((int)0x874bcd14>>31)-(-(int)0x874bcd14>>31))+~0) & (x - ((int)0x874bcd14 & ~(1 << 31)))>>1) | ((!(1+((int)0x874bcd14>>31)-(-(int)0x874bcd14>>31))+~0) & ((((int)0x874bcd14+1)+(!!((int)0x874bcd14 & ~maxBit)+~0))>>1)+(!((int)0x874bcd14 & ~maxBit)));
+  // (maxBit - ((int)0x874bcd14 & ~(1 << 31)));
+  // ((x + (!isMaxBit + ~0)) >> 0) + (isMaxBit) + ((x >> 31) & maxBit);
+  // ((((x + (!isMaxBit + ~0)) >> 1) >> 31) & (maxBit + ((x + (!isMaxBit + ~0)) >> 1)));
+  // ((x + (!isMaxBit + ~0)) >> 1);
+  // ((((x + (!isMaxBit + ~0)) >> 1) >> 31) + ((-(x + (!isMaxBit + ~0)) >> 1) >> 31));
+  static int i = 1;
+  int maxBit = (1 << 31);
+  int zeroMaskX = !x + ~0;
+  int zeroMask = (!n + ~0) & zeroMaskX;
+  int isMaxBit = zeroMask & !(x & ~maxBit);
+  int rawResult = zeroMaskX & ((x + (!isMaxBit + ~0)) >> n);
+  printf("#%d\nmaxBit: %d\nisMaxBit: %d\n zeroMask: %d\nx: %d\nrawResult: %d\n",i++, maxBit, isMaxBit, zeroMask, x, rawResult);
+  1 + ~0;
+  // maxBit + (-1012537719);
+  // int y = !!(x & isMaxBit);
+  //  return (x + (~0+!n) >> n)+y;
+  // return 2;
+  return rawResult + (isMaxBit) + (rawResult & maxBit & zeroMask);
 }
 //#include "bitCount.c"
 //#include "bang.c"
